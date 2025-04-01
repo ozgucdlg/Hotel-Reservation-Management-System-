@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Hotel Reservation System{% endblock %}
+
+{% block content %}
+<div class="home-banner">
+    <h1>Welcome to Hotel Reservation System</h1>
+    <p>A complete solution for managing hotel reservations, rooms, and customers.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Get Started</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-bed mr-2"></i>Room Management</h5>
+                <p class="card-text">Easily manage all your hotel rooms, including room types, pricing, and availability.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-calendar-check mr-2"></i>Reservation Handling</h5>
+                <p class="card-text">Create, view, and manage reservations with a user-friendly interface.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-users mr-2"></i>Customer Management</h5>
+                <p class="card-text">Maintain customer records and booking history for better service.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                System Features
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><i class="fas fa-check-circle text-success mr-2"></i>User-friendly interface</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success mr-2"></i>Real-time room availability</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success mr-2"></i>Customer history tracking</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success mr-2"></i>Simplified reservation management</li>
+                <li class="list-group-item"><i class="fas fa-check-circle text-success mr-2"></i>Secure authentication system</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                About Our System
+            </div>
+            <div class="card-body">
+                <p>Our Hotel Reservation Management System provides a comprehensive solution for hotel owners and managers. With this system, you can efficiently manage your rooms, reservations, and customer information in one place.</p>
+                <p>The system is designed to be intuitive and easy to use, helping you save time and reduce errors in your daily operations.</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

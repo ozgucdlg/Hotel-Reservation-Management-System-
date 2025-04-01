@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Hotel Reservation System{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Hotel Management Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="card-icon">
+                    <i class="fas fa-bed"></i>
+                </div>
+                <div class="card-count">{{ total_rooms }}</div>
+                <div class="card-title">Total Rooms</div>
+                <a href="{{ url_for('rooms') }}" class="btn btn-sm btn-primary mt-3">Manage Rooms</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="card-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="card-count">{{ total_reservations }}</div>
+                <div class="card-title">Total Reservations</div>
+                <a href="{{ url_for('reservations') }}" class="btn btn-sm btn-primary mt-3">Manage Reservations</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="card-count">{{ total_customers }}</div>
+                <div class="card-title">Total Customers</div>
+                <a href="{{ url_for('customers') }}" class="btn btn-sm btn-primary mt-3">Manage Customers</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Reservations</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_reservations %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Room</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Status</th>
+                                <th>Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in recent_reservations %}
+                            <tr>
+                                <td>{{ reservation.id }}</td>
+                                <td>{{ reservation.customer.first_name }} {{ reservation.customer.last_name }}</td>
+                                <td>{{ reservation.room.room_number }}</td>
+                                <td>{{ reservation.check_in.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ reservation.check_out.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% if reservation.status == 'confirmed' %}
+                                    <span class="badge badge-success">Confirmed</span>
+                                    {% elif reservation.status == 'checked_in' %}
+                                    <span class="badge badge-primary">Checked In</span>
+                                    {% elif reservation.status == 'checked_out' %}
+                                    <span class="badge badge-secondary">Checked Out</span>
+                                    {% elif reservation.status == 'cancelled' %}
+                                    <span class="badge badge-danger">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ reservation.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No recent reservations found.</p>
+                {% endif %}
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('reservations') }}" class="btn btn-primary">View All Reservations</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{{ url_for('add_reservation') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle mr-2"></i> New Reservation
+                    </a>
+                    <a href="{{ url_for('add_customer') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-plus mr-2"></i> Add Customer
+                    </a>
+                    <a href="{{ url_for('add_room') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-door-open mr-2"></i> Add Room
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>System Status</h5>
+            </div>
+            <div class="card-body">
+                <p><i class="fas fa-circle text-success mr-2"></i> <strong>System:</strong> Online</p>
+                <p><i class="fas fa-database mr-2"></i> <strong>Database:</strong> Connected</p>
+                <p><i class="fas fa-clock mr-2"></i> <strong>Last Updated:</strong> {{ now().strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add any dashboard-specific JavaScript here
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard loaded');
+    });
+</script>
+{% endblock %} 
