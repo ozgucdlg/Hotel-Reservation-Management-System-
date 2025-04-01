@@ -21,10 +21,10 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# Add global functions for templates
-@app.template_filter('now')
-def _now():
-    return datetime.now()
+# Context processors for templates
+@app.context_processor
+def inject_now():
+    return {'now': datetime.now}
 
 # Routes
 @app.route('/')

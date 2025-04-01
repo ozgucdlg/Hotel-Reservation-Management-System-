@@ -75,7 +75,8 @@ table {
 }
 
 .home-banner {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/hotel-bg.jpg');
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                linear-gradient(to right, #0062E6, #33AEFF);
     background-size: cover;
     background-position: center;
     color: white;
