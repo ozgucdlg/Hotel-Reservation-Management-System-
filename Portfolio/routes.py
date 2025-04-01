@@ -1,7 +1,7 @@
-from flask import Flask
-app= Flask(__name__)
+from Portfolio import app
+
 
 @app.route('/')
-def settingUp():
+def index():
 
     return "<h1 style='color:blue;'>Hello again and again</h1>"
