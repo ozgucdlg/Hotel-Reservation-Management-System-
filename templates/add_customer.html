@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Customer - Hotel Reservation System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add New Customer</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_customer') }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="first_name">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="last_name">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Add Customer</button>
+                        <a href="{{ url_for('customers') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simple form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^[0-9\+\-\(\)\s]{10,15}$/;
+            
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            
+            let valid = true;
+            let message = '';
+            
+            if (!emailRegex.test(email)) {
+                valid = false;
+                message += 'Please enter a valid email address.\n';
+            }
+            
+            if (!phoneRegex.test(phone)) {
+                valid = false;
+                message += 'Please enter a valid phone number (10-15 digits).\n';
+            }
+            
+            if (!valid) {
+                e.preventDefault();
+                alert(message);
+            }
+        });
+    });
+</script>
+{% endblock %} 

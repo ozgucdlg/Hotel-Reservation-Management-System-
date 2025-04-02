@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Reservation - Hotel Reservation System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h5>Create New Reservation</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_reservation') }}">
+                    <div class="form-group">
+                        <label for="customer_id">Customer</label>
+                        <select class="form-control" id="customer_id" name="customer_id" required>
+                            <option value="">Select Customer</option>
+                            {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.first_name }} {{ customer.last_name }} ({{ customer.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="room_id">Room</label>
+                        <select class="form-control" id="room_id" name="room_id" required>
+                            <option value="">Select Room</option>
+                            {% for room in rooms %}
+                                {% if room.is_available %}
+                                    <option value="{{ room.id }}">Room {{ room.room_number }} - {{ room.room_type }} (${{ "%.2f"|format(room.price) }} per night)</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="check_in">Check-in Date</label>
+                                <input type="date" class="form-control" id="check_in" name="check_in" required min="{{ now().strftime('%Y-%m-%d') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="check_out">Check-out Date</label>
+                                <input type="date" class="form-control" id="check_out" name="check_out" required min="{{ now().strftime('%Y-%m-%d') }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Create Reservation</button>
+                        <a href="{{ url_for('reservations') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h5>Create a New Customer</h5>
+            </div>
+            <div class="card-body">
+                <p>If the customer is not in the list above, you can add a new customer first.</p>
+                <a href="{{ url_for('add_customer') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-user-plus"></i> Add New Customer
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set minimum date for check-out based on check-in date
+        document.getElementById('check_in').addEventListener('change', function() {
+            const checkInDate = this.value;
+            document.getElementById('check_out').setAttribute('min', checkInDate);
+            
+            // If check-out date is before check-in date, reset it
+            const checkOutDate = document.getElementById('check_out').value;
+            if (checkOutDate && checkOutDate < checkInDate) {
+                document.getElementById('check_out').value = checkInDate;
+            }
+        });
+    });
+</script>
+{% endblock %} 

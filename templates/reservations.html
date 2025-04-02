@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservations - Hotel Reservation System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Reservations Management</h1>
+    <a href="{{ url_for('add_reservation') }}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Add New Reservation
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>All Reservations</h5>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="reservationSearchInput" placeholder="Search reservations...">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if reservations %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="reservationsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Room</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.id }}</td>
+                        <td>{{ reservation.customer.first_name }} {{ reservation.customer.last_name }}</td>
+                        <td>{{ reservation.room.room_number }}</td>
+                        <td>{{ reservation.check_in.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ reservation.check_out.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if reservation.status == 'confirmed' %}
+                            <span class="badge badge-success">Confirmed</span>
+                            {% elif reservation.status == 'checked_in' %}
+                            <span class="badge badge-primary">Checked In</span>
+                            {% elif reservation.status == 'checked_out' %}
+                            <span class="badge badge-secondary">Checked Out</span>
+                            {% elif reservation.status == 'cancelled' %}
+                            <span class="badge badge-danger">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ reservation.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Actions
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#">View Details</a>
+                                    <a class="dropdown-item" href="#">Edit</a>
+                                    {% if reservation.status == 'confirmed' %}
+                                    <a class="dropdown-item" href="#">Check In</a>
+                                    <a class="dropdown-item" href="#">Cancel</a>
+                                    {% elif reservation.status == 'checked_in' %}
+                                    <a class="dropdown-item" href="#">Check Out</a>
+                                    {% endif %}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="#">Delete</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No reservations found. Create a new reservation to get started.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Reservation Statistics</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="reservationStatsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Upcoming Check-ins</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% set upcoming_checkins = reservations|selectattr('status', 'equalto', 'confirmed')|list %}
+                    {% if upcoming_checkins %}
+                        {% for reservation in upcoming_checkins[:5] %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">Room {{ reservation.room.room_number }} - {{ reservation.customer.first_name }} {{ reservation.customer.last_name }}</h6>
+                                    <small class="text-muted">Check-in: {{ reservation.check_in.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <span class="badge badge-primary badge-pill">{{ reservation.room.room_type }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">No upcoming check-ins</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Reservation search functionality
+        document.getElementById('reservationSearchInput').addEventListener('keyup', function() {
+            const searchText = this.value.toLowerCase();
+            const table = document.getElementById('reservationsTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const customerName = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+                const roomNumber = rows[i].getElementsByTagName('td')[2].textContent.toLowerCase();
+                
+                if (customerName.includes(searchText) || roomNumber.includes(searchText)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        });
+        
+        // Reservation statistics chart
+        var ctx = document.getElementById('reservationStatsChart').getContext('2d');
+        var reservations = {{ reservations|length }};
+        var chart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Confirmed', 'Checked In', 'Checked Out', 'Cancelled'],
+                datasets: [{
+                    data: [
+                        {{ reservations|selectattr('status', 'equalto', 'confirmed')|list|length }},
+                        {{ reservations|selectattr('status', 'equalto', 'checked_in')|list|length }},
+                        {{ reservations|selectattr('status', 'equalto', 'checked_out')|list|length }},
+                        {{ reservations|selectattr('status', 'equalto', 'cancelled')|list|length }}
+                    ],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.7)',  // Success - green
+                        'rgba(0, 123, 255, 0.7)',  // Primary - blue
+                        'rgba(108, 117, 125, 0.7)', // Secondary - gray
+                        'rgba(220, 53, 69, 0.7)'   // Danger - red
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(108, 117, 125, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Reservation Status Distribution'
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %} 
