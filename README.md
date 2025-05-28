@@ -24,7 +24,7 @@ A comprehensive web application for managing hotel reservations, rooms, and cust
 
 1. Clone this repository:
    ```
-   git clone <repository-url>
+   git clone <https://github.com/ozgucdlg/Hotel-Reservation-Management-System-.git>
    cd hotel-reservation-system
    ```
 
